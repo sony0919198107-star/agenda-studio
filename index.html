@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>佳里奇美醫院 護理部研發創新委員會議程工作室</title>
+  <style>
+    :root {
+      --primary: #1b6ec2;
+      --primary-dark: #124b87;
+      --bg-gray: #f4f6f9;
+      --border-color: #d1d9e0;
+      --text-main: #212529;
+      --text-muted: #6c757d;
+      --badge-done: #28a745;
+      --badge-process: #d97706;
+      --badge-pending: #dc3545;
+      --card-bg: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft JhengHei", sans-serif; }
+    body { background-color: var(--bg-gray); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* Topbar */
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      flex-shrink: 0;
+    }
+    .header-title { display: flex; align-items: center; gap: 10px; }
+    .header-title h1 { font-size: 1.15rem; font-weight: 600; }
+    .header-title span { font-size: 0.85rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .header-actions button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 6px 13px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .header-actions button:hover { background: #e9ecef; }
+    .header-actions button.btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.6); }
+    .header-actions button.btn-outline:hover { background: rgba(255,255,255,0.15); }
+    .header-actions button.btn-print { background: #10b981; color: white; }
+    .header-actions button.btn-print:hover { background: #059669; }
+
+    /* Main Studio Layout */
+    .studio-container { display: flex; flex: 1; height: calc(100vh - 54px); overflow: hidden; }
+
+    /* Left Sidebar */
+    .sidebar-left {
+      width: 320px;
+      background: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .panel-header {
+      padding: 12px 16px;
+      background: #fafbfc;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-header h2 { font-size: 0.95rem; font-weight: 600; color: #444; }
+    .stats-badge { font-size: 0.75rem; background: #e2e8f0; color: #475569; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
+    .section-title-divider {
+      background: #f1f5f9;
+      padding: 6px 16px;
+      font-size: 0.76rem;
+      font-weight: bold;
+      color: #64748b;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .agenda-nav-list { list-style: none; overflow-y: auto; flex: 1; }
+    .nav-item {
+      padding: 11px 16px;
+      border-bottom: 1px solid #edf2f7;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      transition: background 0.15s;
+    }
+    .nav-item:hover { background-color: #f8fafc; }
+    .nav-item.active { background-color: #e8f0fe; border-left: 4px solid var(--primary); }
+    .nav-item-title { font-size: 0.86rem; font-weight: 600; color: #1e293b; line-height: 1.35; }
+    .nav-item-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 3px; }
+    .nav-item-owner { font-size: 0.74rem; color: var(--text-muted); }
+    .badge {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: white;
+    }
+    .badge-已完成 { background-color: var(--badge-done); }
+    .badge-進行中 { background-color: var(--badge-process); }
+    .badge-未進行 { background-color: var(--badge-pending); }
+    .badge-已確認 { background-color: var(--badge-done); }
+
+    /* Center: Edit Workspace */
+    .workspace-center {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: var(--bg-gray);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .edit-card {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title-group { margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #edf2f7; }
+    .card-title-group h3 { font-size: 1.05rem; color: #0f172a; margin-bottom: 4px; }
+    .card-title-group .sub { font-size: 0.8rem; color: #64748b; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 6px; }
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 0.88rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: #ffffff;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(27,110,194,0.15); }
+    textarea.form-control { min-height: 180px; resize: vertical; line-height: 1.5; }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+    .action-bar { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-save { background: #0284c7; color: white; border: none; padding: 10px 18px; font-weight: 600; border-radius: 4px; cursor: pointer; }
+    .btn-save:hover { background: #0369a1; }
+    .btn-complete { background: var(--badge-done); color: white; border: none; padding: 10px 20px; font-weight: 600; border-radius: 4px; cursor: pointer; }
+    .btn-complete:hover { background: #218838; }
+
+    /* Right Preview Pane */
+    .preview-right {
+      width: 520px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .preview-doc {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      color: #1e293b;
+      background: #ffffff;
+      margin: 16px;
+      border: 1px solid #cbd5e1;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .preview-doc h2 { font-size: 1.15rem; text-align: center; margin-bottom: 4px; color: #0f172a; font-weight: bold; }
+    .preview-doc h3 { font-size: 1rem; text-align: center; margin-bottom: 8px; color: #1e293b; font-weight: bold; }
+    .preview-doc .doc-meta { font-size: 0.8rem; text-align: center; color: #475569; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #0f172a; line-height: 1.5; }
+    .preview-table { width: 100%; border-collapse: collapse; margin-top: 8px; margin-bottom: 16px; font-size: 0.8rem; }
+    .preview-table th, .preview-table td { border: 1px solid #334155; padding: 6px 6px; vertical-align: top; }
+    .preview-table th { background: #f1f5f9; text-align: center; font-weight: bold; }
+    
+    .section-content-box {
+      background: #fafbfc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin-left: 10px;
+      margin-top: 4px;
+      margin-bottom: 14px;
+      font-size: 0.82rem;
+      color: #334155;
+      white-space: pre-wrap;
+    }
+
+    .signature-table { width: 100%; border-collapse: collapse; margin-top: 24px; font-size: 0.85rem; }
+    .signature-table th, .signature-table td { border: 1px solid #334155; text-align: center; }
+    .signature-table th { background: #f8fafc; padding: 6px; width: 33.33%; font-weight: bold; }
+    .signature-table td { height: 60px; vertical-align: bottom; padding: 6px; color: #94a3b8; font-size: 0.75rem; }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Direct Print Style */
+    @media print {
+      body {
+        background: white !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      header, .sidebar-left, .workspace-center, .panel-header, .toast {
+        display: none !important;
+      }
+      .studio-container {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .preview-right {
+        width: 100% !important;
+        background: white !important;
+      }
+      .preview-doc {
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      .section-content-box {
+        border: none !important;
+        background: transparent !important;
+        padding: 4px 0 !important;
+      }
+      .preview-table, .signature-table {
+        page-break-inside: auto;
+      }
+      .preview-table tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+      .preview-table th, .preview-table td,
+      .signature-table th, .signature-table td {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-title">
+      <h1>護理部研發創新委員會議程工作室</h1>
+      <span>佳里奇美醫院</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn-print" onclick="window.print()">🖨️ 直接列印預覽</button>
+      <button onclick="exportWord()">📥 匯出 Word (.doc)</button>
+      <button class="btn-outline" onclick="copyAgenda()">📋 複製全文</button>
+    </div>
+  </header>
+
+  <!-- Studio Workspace -->
+  <div class="studio-container">
+
+    <!-- Left Sidebar: Agenda Items -->
+    <div class="sidebar-left">
+      <div class="panel-header">
+        <h2>議程與研議項目</h2>
+        <span class="stats-badge" id="statsBadge">0/13 已就緒</span>
+      </div>
+      <ul class="agenda-nav-list" id="agendaNavList"></ul>
+    </div>
+
+    <!-- Center: Form Editor -->
+    <div class="workspace-center">
+      <div class="edit-card">
+        <div class="card-title-group">
+          <h3 id="editItemTitle">載入中...</h3>
+          <div class="sub" id="editItemSub">負責人：-</div>
+        </div>
+
+        <div class="form-row" id="rowMetaFields">
+          <div class="form-group" id="grpOwner">
+            <label>負責人員 / 提案人</label>
+            <input type="text" id="inputOwner" class="form-control" />
+          </div>
+          <div class="form-group" id="grpStatus">
+            <label>目前進度狀態</label>
+            <select id="selectStatus" class="form-control">
+              <option value="進行中">進行中</option>
+              <option value="已完成">已完成</option>
+              <option value="未進行">未進行</option>
+            </select>
+          </div>
+          <div class="form-group" id="grpResolution">
+            <label>決議事項</label>
+            <select id="selectResolution" class="form-control">
+              <option value="追蹤">追蹤</option>
+              <option value="結案">結案</option>
+              <option value="暫緩">暫緩</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label id="lblContent">作業概況說明 / 議案內容</label>
+          <textarea id="textContent" class="form-control" placeholder="請填寫內容說明..."></textarea>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-save" onclick="saveCurrentItem(false)">暫存內容</button>
+          <button class="btn-complete" id="btnMarkComplete" onclick="saveCurrentItem(true)">標記為「已確認」並儲存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Real-time Doc Preview -->
+    <div class="preview-right">
+      <div class="panel-header">
+        <h2>議程與記錄即時預覽</h2>
+      </div>
+      <div class="preview-doc" id="previewContainer">
+        <!-- Rendered Document View -->
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast" class="toast">已儲存</div>
+
+  <script>
+    // 預設資料：涵蓋 10 項常態追蹤事項 + 3 個現場會議段落
+    const defaultFullAgenda = [
+      // 區段一：追蹤事項 (Type: 'tracking')
+      {
+        id: "T1",
+        type: "tracking",
+        seq: 1,
+        title: "輔導護理專案/個案報告送審至少五篇",
+        owner: "方惠姍、彭美惠",
+        content: "1.個案報告：送審8篇(通過4篇，審查中3篇)。\n2.專案：送審1篇(115年05月送審，10/1公告)\n(附件-學術發表調查結果)",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+      {
+        id: "T2",
+        type: "tracking",
+        seq: 2,
+        title: "輔導專案學協會研究論文海報發表至少成長10%",
+        owner: "方惠姍、彭美惠",
+        content: "1.海報：投稿27篇(通過22篇，審查中4篇，未接受1篇)。\n2.研究論文：護理部內科1篇，IRB申請中。\n(附件-學術發表調查結果)",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+      {
+        id: "T3",
+        type: "tracking",
+        seq: 3,
+        title: "輔導國內學術會議口頭發表一篇",
+        owner: "沈水雲",
+        content: "",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+      {
+        id: "T4",
+        type: "tracking",
+        seq: 4,
+        title: "舉辦實證護理為基礎研討會-系列課程",
+        owner: "王麗萍、吳佩書、謝惠靜",
+        content: "",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+      {
+        id: "T5",
+        type: "tracking",
+        seq: 5,
+        title: "以實證護理為基礎參與實證競賽",
+        owner: "研發創新全體委員",
+        content: "已按期參與實證競賽並完成提報結案。",
+        status: "已完成",
+        resolution: "結案"
+      },
+      {
+        id: "T6",
+        type: "tracking",
+        seq: 6,
+        title: "辦理護理創新競賽一場",
+        owner: "許馨文、陳姿尹",
+        content: "",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+      {
+        id: "T7",
+        type: "tracking",
+        seq: 7,
+        title: "辦理護理行銷",
+        owner: "王詩媛",
+        content: "",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+      {
+        id: "T8",
+        type: "tracking",
+        seq: 8,
+        title: "網頁維護",
+        owner: "吳佩書",
+        content: "",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+      {
+        id: "T9",
+        type: "tracking",
+        seq: 9,
+        title: "配合總院護理電子報發行",
+        owner: "王詩媛、曾妍鳳",
+        content: "",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+      {
+        id: "T10",
+        type: "tracking",
+        seq: 10,
+        title: "常規工作內容",
+        owner: "曾妍鳳",
+        content: "彙整115年度研發創新委員會成果紀錄。",
+        status: "進行中",
+        resolution: "追蹤"
+      },
+
+      // 區段二～四：現場研議與後續追蹤事項 (Type: 'section')
+      {
+        id: "S2",
+        type: "section",
+        title: "二、本次會議議題",
+        owner: "全體委員",
+        content: "【案由一】：115年度創新專案評選與各病房送件輔導機制研議。\n說明：請各科委員針對提報進度落後單位提出輔導方案。\n決議：照案通過，列入各科督導重點。",
+        status: "進行中",
+        resolution: ""
+      },
+      {
+        id: "S3",
+        type: "section",
+        title: "三、臨時動議",
+        owner: "現場臨時提報",
+        content: "（無）",
+        status: "已完成",
+        resolution: ""
+      },
+      {
+        id: "S4",
+        type: "section",
+        title: "四、下次會議追蹤事項",
+        owner: "全體委員",
+        content: "1. 追蹤各單位送審個案報告與海報之審查回饋修改進度。\n2. 檢視115年度研發創新成果彙整報表完備度。",
+        status: "進行中",
+        resolution: ""
+      }
+    ];
+
+    let agendaData = [];
+    let activeId = "T1";
+
+    function init() {
+      const cached = localStorage.getItem("jiali_rd_agenda_v2");
+      if (cached) {
+        try { agendaData = JSON.parse(cached); } catch(e) { agendaData = defaultFullAgenda; }
+      } else {
+        agendaData = defaultFullAgenda;
+      }
+      renderNav();
+      loadItem(activeId);
+      renderPreview();
+    }
+
+    function renderNav() {
+      const list = document.getElementById("agendaNavList");
+      list.innerHTML = "";
+      let readyCount = 0;
+
+      // Group 1: 追蹤事項
+      const grp1Header = document.createElement("div");
+      grp1Header.className = "section-title-divider";
+      grp1Header.innerText = "【一、會議追蹤事項】";
+      list.appendChild(grp1Header);
+
+      agendaData.filter(d => d.type === "tracking").forEach(item => {
+        if (item.status === "已完成" || (item.content && item.content.trim() !== "")) readyCount++;
+        const li = document.createElement("li");
+        li.className = `nav-item ${item.id === activeId ? 'active' : ''}`;
+        li.onclick = () => selectItem(item.id);
+
+        li.innerHTML = `
+          <div class="nav-item-title">${item.seq}. ${item.title}</div>
+          <div class="nav-item-meta">
+            <span class="nav-item-owner">👤 ${item.owner || '未指派'}</span>
+            <span class="badge badge-${item.status}">${item.status}</span>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+
+      // Group 2: 現場議案與結論
+      const grp2Header = document.createElement("div");
+      grp2Header.className = "section-title-divider";
+      grp2Header.innerText = "【二～四、會議現場研議與決議】";
+      list.appendChild(grp2Header);
+
+      agendaData.filter(d => d.type === "section").forEach(item => {
+        if (item.status === "已完成" || (item.content && item.content.trim() !== "")) readyCount++;
+        const li = document.createElement("li");
+        li.className = `nav-item ${item.id === activeId ? 'active' : ''}`;
+        li.onclick = () => selectItem(item.id);
+
+        li.innerHTML = `
+          <div class="nav-item-title">${item.title}</div>
+          <div class="nav-item-meta">
+            <span class="nav-item-owner">📝 內容研議編輯</span>
+            <span class="badge badge-${item.status}">${item.status}</span>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+
+      document.getElementById("statsBadge").innerText = `${readyCount}/${agendaData.length} 已就緒`;
+    }
+
+    function selectItem(id) {
+      activeId = id;
+      renderNav();
+      loadItem(id);
+    }
+
+    function loadItem(id) {
+      const item = agendaData.find(d => d.id === id);
+      if (!item) return;
+
+      const isTracking = item.type === "tracking";
+      document.getElementById("editItemTitle").innerText = isTracking ? `${item.seq}. ${item.title}` : item.title;
+      document.getElementById("editItemSub").innerText = isTracking ? `追蹤項目 | 負責人：${item.owner}` : `研議與紀錄項目`;
+
+      document.getElementById("inputOwner").value = item.owner || "";
+      document.getElementById("selectStatus").value = item.status || "進行中";
+      document.getElementById("selectResolution").value = item.resolution || "追蹤";
+      document.getElementById("textContent").value = item.content || "";
+
+      // 針對非表格項目調整欄位可視度
+      if (isTracking) {
+        document.getElementById("grpResolution").style.display = "block";
+        document.getElementById("lblContent").innerText = "作業概況說明 (進度、篇數、公告期程)";
+        document.getElementById("textContent").placeholder = "請填寫近期執行進度、篇數統計、審查狀態或附件註記...";
+      } else {
+        document.getElementById("grpResolution").style.display = "none";
+        document.getElementById("lblContent").innerText = `${item.title} - 內容討論與決議紀錄`;
+        document.getElementById("textContent").placeholder = "請輸入現場討論要點、提案說明、決議事項或下次追蹤重點...";
+      }
+    }
+
+    function saveCurrentItem(markAsComplete = false) {
+      const item = agendaData.find(d => d.id === activeId);
+      if (!item) return;
+
+      item.owner = document.getElementById("inputOwner").value.trim();
+      item.content = document.getElementById("textContent").value;
+      if (item.type === "tracking") {
+        item.resolution = document.getElementById("selectResolution").value;
+      }
+
+      if (markAsComplete) {
+        item.status = "已完成";
+        document.getElementById("selectStatus").value = "已完成";
+      } else {
+        item.status = document.getElementById("selectStatus").value;
+      }
+
+      localStorage.setItem("jiali_rd_agenda_v2", JSON.stringify(agendaData));
+      renderNav();
+      renderPreview();
+      showToast(markAsComplete ? "已標記完成並更新！" : "內容已儲存！");
+    }
+
+    function renderPreview() {
+      const container = document.getElementById("previewContainer");
+      
+      const trackingRows = agendaData.filter(d => d.type === "tracking").map((d, idx) => `
+        <tr>
+          <td style="text-align:center;">${idx + 1}</td>
+          <td><b>${d.title}</b></td>
+          <td style="text-align:center;">${(d.owner || '').replace(/、/g, "<br/>")}</td>
+          <td>${(d.content || "<i>(尚無提報說明)</i>").replace(/\n/g, "<br/>")}</td>
+          <td style="text-align:center;">${d.status === "已完成" ? "●已完成" : (d.status === "進行中" ? "●進行中" : "●未進行")}</td>
+          <td style="text-align:center;">●${d.resolution}</td>
+        </tr>
+      `).join("");
+
+      const s2 = agendaData.find(d => d.id === "S2");
+      const s3 = agendaData.find(d => d.id === "S3");
+      const s4 = agendaData.find(d => d.id === "S4");
+
+      container.innerHTML = `
+        <h2>奇美醫療財團法人佳里奇美醫院</h2>
+        <h3>2026年11月護理部研發創新委員會議記錄</h3>
+        <div class="doc-meta">
+          時間：2026年11月17日（星期四） 14:30-15:30 ｜ 地點：南埕衖事<br/>
+          主席：蕭蕙莉 護理長 ｜ 紀錄：方惠姍 小組長 ｜ 出席：詳見簽到單
+        </div>
+        
+        <div style="font-weight:bold; margin-bottom:6px;">【會議議程 - 追蹤事項】：</div>
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th style="width:35px;">序</th>
+              <th>追蹤事項</th>
+              <th style="width:75px;">負責人</th>
+              <th>作業概況說明</th>
+              <th style="width:65px;">進度</th>
+              <th style="width:55px;">決議</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${trackingRows}
+          </tbody>
+        </table>
+
+        <div style="margin-top:16px; font-weight:bold;">二、本次會議議題：</div>
+        <div class="section-content-box">${(s2 && s2.content ? s2.content : "（於會議現場討論研議）").replace(/\n/g, "<br/>")}</div>
+        
+        <div style="font-weight:bold;">三、臨時動議：</div>
+        <div class="section-content-box">${(s3 && s3.content ? s3.content : "（無）").replace(/\n/g, "<br/>")}</div>
+
+        <div style="font-weight:bold;">四、下次會議追蹤事項：</div>
+        <div class="section-content-box">${(s4 && s4.content ? s4.content : "（依本次決議賡續列管追蹤）").replace(/\n/g, "<br/>")}</div>
+
+        <!-- 簽核欄位 -->
+        <table class="signature-table">
+          <thead>
+            <tr>
+              <th>幹事</th>
+              <th>研發創新委員主席</th>
+              <th>護理部部長</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>（簽章）</td>
+              <td>（簽章）</td>
+              <td>（簽章）</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    function copyAgenda() {
+      const content = document.getElementById("previewContainer").innerText;
+      navigator.clipboard.writeText(content).then(() => {
+        showToast("已複製議程全文到剪貼簿！");
+      });
+    }
+
+    function exportWord() {
+      const header = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office'
+              xmlns:w='urn:schemas-microsoft-com:office:word'
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>會議議程與紀錄</title>
+        <style>
+          body { font-family: '標楷體', 'Microsoft JhengHei', sans-serif; font-size: 11pt; }
+          h2, h3 { text-align: center; margin: 4px 0; }
+          .doc-meta { text-align: center; margin-bottom: 15px; font-size: 10pt; }
+          table { border-collapse: collapse; width: 100%; margin-top: 10px; margin-bottom: 15px; }
+          td, th { border: 1px solid black; padding: 6px; font-size: 10pt; }
+          th { background: #eee; text-align: center; }
+          .section-title { font-weight: bold; margin-top: 12px; margin-bottom: 4px; }
+          .section-body { margin-left: 15px; margin-bottom: 10px; line-height: 1.5; }
+        </style>
+        </head><body>
+      `;
+      const footer = "</body></html>";
+      const sourceHTML = header + document.getElementById("previewContainer").innerHTML + footer;
+      const blob = new Blob(['\ufeff' + sourceHTML], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "20261117_護理部研發創新委員會議紀錄.doc";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
